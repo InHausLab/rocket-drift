@@ -94,10 +94,36 @@ canvas { display: block; width: 100vw; height: 100vh; }
 <button id="mute-btn" title="Toggle sound">🔊</button>
 
 <!-- TITLE SCREEN -->
-<div id="screen-title" class="screen">
+<div id="screen-title" class="screen" style="overflow-y:auto;padding:20px 0;justify-content:flex-start;padding-top:clamp(30px,8vh,80px)">
   <div class="title-text">ROCKET DRIFT</div>
-  <div class="subtitle">Tap &amp; hold to thrust. Avoid obstacles. Reach the portal.</div>
+  <div class="subtitle">Navigate through space. Reach the portal. Don't crash.</div>
+
+  <!-- HOW TO PLAY -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;max-width:640px;width:90%;">
+    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:130px;">
+      <div style="font-size:26px;margin-bottom:6px;">👆</div>
+      <div style="color:#a78bfa;font-size:12px;font-weight:700;letter-spacing:0.05em;margin-bottom:4px;">TOUCH / CLICK</div>
+      <div style="color:rgba(200,200,255,0.7);font-size:12px;">Tap &amp; hold anywhere<br>to thrust up</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:130px;">
+      <div style="font-size:26px;margin-bottom:6px;">⌨️</div>
+      <div style="color:#a78bfa;font-size:12px;font-weight:700;letter-spacing:0.05em;margin-bottom:4px;">KEYBOARD</div>
+      <div style="color:rgba(200,200,255,0.7);font-size:12px;">Hold <strong style="color:#fff;">SPACEBAR</strong><br>to thrust up</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:130px;">
+      <div style="font-size:26px;margin-bottom:6px;">🌀</div>
+      <div style="color:#a78bfa;font-size:12px;font-weight:700;letter-spacing:0.05em;margin-bottom:4px;">THE GOAL</div>
+      <div style="color:rgba(200,200,255,0.7);font-size:12px;">Reach the swirling<br>portal at the end</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px 18px;text-align:center;flex:1;min-width:130px;">
+      <div style="font-size:26px;margin-bottom:6px;">☄️</div>
+      <div style="color:#a78bfa;font-size:12px;font-weight:700;letter-spacing:0.05em;margin-bottom:4px;">AVOID</div>
+      <div style="color:rgba(200,200,255,0.7);font-size:12px;">Meteors &amp; planets<br>will destroy you</div>
+    </div>
+  </div>
+
   <button class="btn" id="btn-start">START GAME</button>
+  <div style="color:rgba(200,200,255,0.5);font-size:12px;margin:8px 0 16px;text-align:center;">Select a level to jump straight in</div>
   <div class="level-grid" id="level-grid"></div>
 </div>
 
