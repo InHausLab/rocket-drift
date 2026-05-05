@@ -273,12 +273,16 @@ function initNebula(li){
 }
 function drawBg(){
   ctx.fillStyle=nebulaGrad||'#000011'; ctx.fillRect(0,0,W,H);
+  if(!isFinite(nebOff)||W===0||H===0)return;
   ctx.save(); ctx.globalAlpha=0.05;
   for(let i=0;i<3;i++){
     const x=((nebOff*0.08+i*W*0.4)%(W*1.5))-W*0.25;
-    const g=ctx.createRadialGradient(x,H*0.4,0,x,H*0.4,H*0.6);
-    g.addColorStop(0,'#7c3aed'); g.addColorStop(1,'transparent');
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    if(!isFinite(x))continue;
+    try{
+      const g=ctx.createRadialGradient(x,H*0.4,0,x,H*0.4,H*0.6);
+      g.addColorStop(0,'#7c3aed'); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    }catch(e){}
   }
   ctx.restore();
 }
@@ -626,8 +630,10 @@ buildGrid(); showScreen('title'); initStars(); initNebula(0);
 // Animated title BG
 (function titleBg(ts){
   if(running)return;
-  nebOff=ts*0.04;
-  drawBg(); updateStars(0.016,80); drawStars();
+  nebOff=(ts||0)*0.04;
+  try{ drawBg(); }catch(e){}
+  updateStars(0.016,80);
+  try{ drawStars(); }catch(e){}
   requestAnimationFrame(titleBg);
 })();
 </script>
