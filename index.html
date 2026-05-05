@@ -717,8 +717,9 @@ function drawPlanet(o, screenX) {
   ctx.beginPath(); ctx.arc(0,0,o.r,0,Math.PI*2); ctx.fill();
 
   // Surface bands
-  ctx.save(); ctx.globalAlpha=0.18;
-  ctx.clip(new Path2D(()=>{ let p=new Path2D(); p.arc(0,0,o.r,0,Math.PI*2); return p; })());
+  ctx.save();
+  ctx.beginPath(); ctx.arc(0,0,o.r,0,Math.PI*2); ctx.clip();
+  ctx.globalAlpha=0.18;
   for(let i=-2;i<=2;i++){
     ctx.fillStyle='rgba(0,0,0,0.4)';
     ctx.fillRect(-o.r, i*o.r*0.25, o.r*2, o.r*0.1);
