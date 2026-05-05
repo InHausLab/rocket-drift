@@ -57,6 +57,21 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;}
   <div style="color:rgba(200,200,255,0.4);font-size:11px;margin:6px 0 10px;">or pick a level below</div>
   <div class="level-grid" id="level-grid"></div>
 </div>
+
+<div id="s-register" class="screen hidden">
+  <div class="title-text" style="font-size:clamp(28px,6vw,52px);margin-bottom:16px;">Who's Flying? 🚀</div>
+  <div class="subtitle">Enter your name to track your high scores</div>
+  <input id="reg-input" type="text" maxlength="16" placeholder="Your name..."
+    style="background:rgba(255,255,255,0.1);border:2px solid rgba(124,58,237,0.6);border-radius:12px;
+    color:#fff;font-size:22px;padding:14px 20px;text-align:center;width:280px;margin:16px 0;
+    outline:none;font-family:inherit;" />
+  <button class="btn" id="btn-register">Let's Go! 🚀</button>
+</div>
+<div id="s-board" class="screen hidden">
+  <div class="title-text" style="font-size:clamp(26px,5vw,52px);margin-bottom:16px;">🏆 Leaderboard</div>
+  <div id="board-content" style="width:100%;max-width:500px;height:55vh;overflow-y:scroll;-webkit-overflow-scrolling:touch;"></div>
+  <button class="btn btn-sec" id="btn-board-back" style="margin-top:16px;">← Back</button>
+</div>
 <div id="hud" class="hidden">
   <div class="pbar-wrap"><div class="pbar-fill" id="pbar"></div></div>
   <div class="hud-row"><span class="hud-lbl" id="hud-lbl">LEVEL 1</span></div>
