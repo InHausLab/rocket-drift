@@ -40,10 +40,16 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;}
 .btn-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px;}
 
 #speed-banner{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(124,58,237,0.6);color:#fff;font-size:16px;font-weight:700;padding:8px 22px;border-radius:20px;z-index:50;pointer-events:none;opacity:0;transition:opacity 0.3s;letter-spacing:0.06em;}
+
+#speed-btns{position:fixed;bottom:20px;left:0;width:100%;display:flex;justify-content:space-between;padding:0 20px;z-index:50;pointer-events:none;}
+#speed-btns.hidden{display:none;}
+.spd-btn{width:64px;height:64px;border-radius:50%;border:2px solid rgba(124,58,237,0.7);background:rgba(0,0,0,0.55);color:#fff;font-size:28px;font-weight:900;pointer-events:all;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;}
+.spd-btn:active{background:rgba(124,58,237,0.4);}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="speed-btns" class="hidden"><button class="spd-btn" id="btn-slower">−</button><button class="spd-btn" id="btn-faster">+</button></div>
 <div id="speed-banner">SPEED 1.0x</div>
 <button id="mute-btn">🔊</button>
 <div id="s-title" class="screen">
@@ -347,6 +353,10 @@ document.addEventListener('keydown',function(e){
   if(e.code==='ArrowLeft'&&!e.repeat){speedMult=Math.max(speedMult/1.2,0.3); showSpeedBanner();}
 });
 document.addEventListener('keyup',  function(e){ if(e.code==='Space') setThrust(false); });
+document.getElementById('btn-faster').addEventListener('touchstart',function(e){e.preventDefault();e.stopPropagation();speedMult=Math.min(speedMult*1.2,3.0);showSpeedBanner();},{passive:false});
+document.getElementById('btn-slower').addEventListener('touchstart',function(e){e.preventDefault();e.stopPropagation();speedMult=Math.max(speedMult/1.2,0.3);showSpeedBanner();},{passive:false});
+document.getElementById('btn-faster').addEventListener('mousedown',function(e){e.stopPropagation();speedMult=Math.min(speedMult*1.2,3.0);showSpeedBanner();});
+document.getElementById('btn-slower').addEventListener('mousedown',function(e){e.stopPropagation();speedMult=Math.max(speedMult/1.2,0.3);showSpeedBanner();});
 canvas.addEventListener('mousedown',  function(){ setThrust(true); });
 canvas.addEventListener('mouseup',    function(){ setThrust(false); });
 canvas.addEventListener('mouseleave', function(){ setThrust(false); });
@@ -711,6 +721,7 @@ function startLevel(li) {
   running=true; lvlStart=performance.now(); lastT=0; thrTimer=0; speedMult=1.0;
   initNebula(li); initStars(); initRocket(); initPortal(li); genObs(li);
   document.getElementById('hud-lbl').textContent='LEVEL '+cfg.id+(currentPlayer?' — '+currentPlayer:'');
+  document.getElementById('speed-btns').classList.remove('hidden');
   showScreen(null);
   startMusic(li);
   requestAnimationFrame(loop);
@@ -764,6 +775,7 @@ function loop(ts) {
 // ── Screens ────────────────────────────────────────
 function showScreen(id) {
   ['title','dead','win','register','board'].forEach(function(s){document.getElementById('s-'+s).classList.toggle('hidden',s!==id);});
+  if(id!==null) document.getElementById('speed-btns').classList.add('hidden');
   document.getElementById('hud').classList.toggle('hidden',id!==null);
 }
 function buildGrid() {
