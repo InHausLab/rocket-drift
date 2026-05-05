@@ -349,8 +349,8 @@ function setThrust(on) {
 }
 document.addEventListener('keydown',function(e){
   if(e.code==='Space'&&!e.repeat){e.preventDefault();setThrust(true);}
-  if(e.code==='ArrowRight'&&!e.repeat){speedMult=Math.min(speedMult*1.2,3.0); showSpeedBanner();}
-  if(e.code==='ArrowLeft'&&!e.repeat){speedMult=Math.max(speedMult/1.2,0.3); showSpeedBanner();}
+  if(e.code==='ArrowRight'&&!e.repeat){e.preventDefault();if(running){speedMult=Math.min(speedMult*1.2,3.0);showSpeedBanner();}}
+  if(e.code==='ArrowLeft'&&!e.repeat){e.preventDefault();if(running){speedMult=Math.max(speedMult/1.2,0.3);showSpeedBanner();}}
 });
 document.addEventListener('keyup',  function(e){ if(e.code==='Space') setThrust(false); });
 document.getElementById('btn-faster').addEventListener('touchstart',function(e){e.preventDefault();e.stopPropagation();speedMult=Math.min(speedMult*1.2,3.0);showSpeedBanner();},{passive:false});
