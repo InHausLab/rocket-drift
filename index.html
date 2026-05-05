@@ -374,6 +374,7 @@ function drawParts(){
 // ── Obstacles ────────────────────────────────
 let obs=[];
 const PCOLS=[['#ef4444','#dc2626','#7f1d1d'],['#f97316','#ea580c','#7c2d12'],['#eab308','#ca8a04','#713f12'],['#8b5cf6','#7c3aed','#4c1d95'],['#06b6d4','#0891b2','#164e63']];
+const PNAMES=['Mars','Venus','Kepler','Zephyr','Kronos','Thalassa','Oberon','Caldris','Vexon','Pyraxis','Lumara','Drevos','Solenne','Noctis','Aridus'];
 function genObs(li){
   obs=[];
   const cfg=LEVELS[li], len=cfg.len, safe=2500;
@@ -394,7 +395,8 @@ function genObs(li){
         const cols=PCOLS[0|Math.random()*PCOLS.length];
         const top=Math.random()<0.5;
         const y=top?r*0.6+Math.random()*r:H-r*0.6-Math.random()*r;
-        obs.push({type:'p',wx:x,y,r,cols,ring:Math.random()<0.35,ra:Math.random()*0.5+0.2});
+        const pname=PNAMES[0|Math.random()*PNAMES.length];
+        obs.push({type:'p',wx:x,y,r,cols,ring:Math.random()<0.35,ra:Math.random()*0.5+0.2,name:pname});
         x+=r*3+800+Math.random()*600; continue;
       }
       x+=600+Math.random()*400;
@@ -451,6 +453,17 @@ function drawPlanet(o,sx){
   const hl=ctx.createRadialGradient(-o.r*0.3,-o.r*0.3,0,-o.r*0.3,-o.r*0.3,o.r*0.65);
   hl.addColorStop(0,'rgba(255,255,255,0.7)'); hl.addColorStop(1,'transparent');
   ctx.fillStyle=hl; ctx.beginPath(); ctx.arc(0,0,o.r,0,Math.PI*2); ctx.fill();
+  // Name label
+  ctx.save();
+  ctx.globalAlpha=0.85;
+  const fontSize=Math.max(11,Math.min(o.r*0.28,22));
+  ctx.font=`bold ${fontSize}px 'Segoe UI',system-ui,sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(0,0,0,0.45)';
+  ctx.fillText(o.name,2,o.r*0.02+2);
+  ctx.fillStyle='rgba(255,255,255,0.9)';
+  ctx.fillText(o.name,0,o.r*0.02);
+  ctx.restore();
   ctx.restore();
 }
 
