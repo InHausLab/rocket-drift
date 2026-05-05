@@ -53,6 +53,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;}
     <div class="how-card"><div class="ico">🌀</div><div class="lbl">THE GOAL</div><div class="desc">Reach the swirling portal at the end</div></div>
   </div>
   <button class="btn" id="btn-start">▶ START GAME</button>
+  <button class="btn btn-sec" id="btn-board" style="margin-top:0;">🏆 Leaderboard</button>
   <div style="color:rgba(200,200,255,0.4);font-size:11px;margin:6px 0 10px;">or pick a level below</div>
   <div class="level-grid" id="level-grid"></div>
 </div>
@@ -172,9 +173,50 @@ var planetImgs = PLANET_PHOTOS.map(function(src){
 });
 
 
+
+// ── Registration + Leaderboard ──────────────────
+var currentPlayer = localStorage.getItem('rd_player') || '';
+
+function getScores() {
+  try { return JSON.parse(localStorage.getItem('rd_scores')||'{}'); } catch(e) { return {}; }
+}
+function saveScore(player, level, time) {
+  var scores = getScores();
+  if (!scores[player]) scores[player] = {};
+  var key = 'l'+level;
+  if (!scores[player][key] || time < scores[player][key]) scores[player][key] = time;
+  localStorage.setItem('rd_scores', JSON.stringify(scores));
+}
+function buildBoard() {
+  var scores = getScores();
+  var content = document.getElementById('board-content');
+  content.innerHTML = '';
+  for (var lvl=1; lvl<=5; lvl++) {
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'color:#a78bfa;font-weight:700;font-size:14px;letter-spacing:0.08em;margin:14px 0 6px;text-align:center;';
+    hdr.textContent = 'LEVEL ' + lvl + ' — ' + LEVELS[lvl-1].name;
+    content.appendChild(hdr);
+    var players = Object.keys(scores).filter(function(p){ return scores[p]['l'+lvl]; });
+    players.sort(function(a,b){ return scores[a]['l'+lvl]-scores[b]['l'+lvl]; });
+    if (!players.length) {
+      var none = document.createElement('div');
+      none.style.cssText = 'color:rgba(200,200,255,0.3);font-size:13px;text-align:center;';
+      none.textContent = 'No scores yet';
+      content.appendChild(none);
+    }
+    players.forEach(function(p, i) {
+      var row = document.createElement('div');
+      var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'  ';
+      var isMe = p===currentPlayer;
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 16px;margin:3px 0;border-radius:8px;background:'+(isMe?'rgba(124,58,237,0.25)':'rgba(255,255,255,0.05)')+';border:1px solid '+(isMe?'rgba(124,58,237,0.5)':'rgba(255,255,255,0.08)')+';';
+      row.innerHTML = '<span style="font-size:18px;margin-right:8px;">'+medal+'</span><span style="color:'+(isMe?'#a78bfa':'#fff')+';font-weight:'+(isMe?'700':'400')+';">'+p+'</span><span style="color:#34d399;font-weight:700;margin-left:auto;">'+fmtT(scores[p]['l'+lvl])+'</span>';
+      content.appendChild(row);
+    });
+  }
+}
 // ── Storage ─────────────────────────────────────
 function lsBest(l)   { return parseFloat(localStorage.getItem('rd_b'+l)||0)||0; }
-function lsSetB(l,t) { var b=lsBest(l); if(!b||t<b) localStorage.setItem('rd_b'+l,t); }
+function lsSetB(l,t) { var b=lsBest(l); if(!b||t<b) localStorage.setItem('rd_b'+l,t); if(currentPlayer) saveScore(currentPlayer,l,t); }
 function lsUnlk()    { return parseInt(localStorage.getItem('rd_u')||1); }
 function lsUnlock(l) { if(l>lsUnlk()) localStorage.setItem('rd_u',l); }
 function fmtT(s)     { return Math.floor(s/60)+':'+((''+Math.floor(s%60)).padStart(2,'0')); }
@@ -627,7 +669,7 @@ function startLevel(li) {
   shk={x:0,y:0,dur:0,str:0};
   running=true; lvlStart=performance.now(); lastT=0; thrTimer=0;
   initNebula(li); initStars(); initRocket(); initPortal(li); genObs(li);
-  document.getElementById('hud-lbl').textContent='LEVEL '+cfg.id;
+  document.getElementById('hud-lbl').textContent='LEVEL '+cfg.id+(currentPlayer?' — '+currentPlayer:'');
   showScreen(null);
   startMusic(li);
   requestAnimationFrame(loop);
@@ -680,7 +722,7 @@ function loop(ts) {
 
 // ── Screens ────────────────────────────────────────
 function showScreen(id) {
-  ['title','dead','win'].forEach(function(s){document.getElementById('s-'+s).classList.toggle('hidden',s!==id);});
+  ['title','dead','win','register','board'].forEach(function(s){document.getElementById('s-'+s).classList.toggle('hidden',s!==id);});
   document.getElementById('hud').classList.toggle('hidden',id!==null);
 }
 function buildGrid() {
@@ -697,13 +739,33 @@ function buildGrid() {
 }
 
 // ── Buttons ────────────────────────────────────────
-document.getElementById('btn-start').addEventListener('click',  function(){initAC();sfxClick();startLevel(0);});
+document.getElementById('btn-start').addEventListener('click', function(){
+  initAC(); sfxClick();
+  if (!currentPlayer) { showScreen('register'); document.getElementById('reg-input').focus(); }
+  else startLevel(0);
+});
 document.getElementById('btn-retry').addEventListener('click',  function(){initAC();sfxClick();startLevel(currentLvlIdx);});
 document.getElementById('btn-menu-d').addEventListener('click', function(){initAC();sfxClick();buildGrid();showScreen('title');});
 document.getElementById('btn-next').addEventListener('click',   function(){initAC();sfxClick();if(currentLvlIdx<LEVELS.length-1)startLevel(currentLvlIdx+1);else{buildGrid();showScreen('title');}});
 document.getElementById('btn-menu-w').addEventListener('click', function(){initAC();sfxClick();buildGrid();showScreen('title');});
 document.getElementById('mute-btn').addEventListener('click',   function(e){e.stopPropagation();initAC();toggleMute();});
 
+
+document.getElementById('btn-board').addEventListener('click', function(){ initAC();sfxClick();buildBoard();showScreen('board'); });
+document.getElementById('btn-board-back').addEventListener('click', function(){ initAC();sfxClick();showScreen('title'); });
+document.getElementById('btn-register').addEventListener('click', function(){
+  initAC(); sfxClick();
+  var name = document.getElementById('reg-input').value.trim();
+  if (!name) return;
+  currentPlayer = name;
+  localStorage.setItem('rd_player', name);
+  startLevel(0);
+});
+document.getElementById('reg-input').addEventListener('keydown', function(e){
+  if (e.key==='Enter') document.getElementById('btn-register').click();
+});
+
+// Show player name in HUD
 // ── Boot ───────────────────────────────────────────
 buildGrid(); showScreen('title'); initStars(); initNebula(0);
 // Title BG animation — ts safely defaulted to 0 on first call
