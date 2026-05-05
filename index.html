@@ -501,6 +501,61 @@ function drawPlanet(o,sx) {
   ctx.restore();
 }
 
+
+// ── Banner ──────────────────────────────────
+var BANNER_TEXT = 'Mom & Dad are the Best ♥';
+var BANNER_WORLD_X = 6000; // mid-level approx
+
+function drawBanner(sx) {
+  if (sx < -600 || sx > W + 600) return;
+  ctx.save();
+  ctx.translate(sx, H * 0.15);
+
+  var tw = 420, th = 52, pad = 18;
+  var bw = tw + pad*2, bh = th + pad;
+
+  // Glow
+  ctx.save();
+  ctx.globalAlpha = 0.25;
+  var bg2 = ctx.createRadialGradient(0, 0, 0, 0, 0, bw * 0.8);
+  bg2.addColorStop(0, '#f472b6'); bg2.addColorStop(1, 'transparent');
+  ctx.fillStyle = bg2; ctx.beginPath(); ctx.arc(0, 0, bw * 0.8, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Banner background
+  ctx.globalAlpha = 0.92;
+  ctx.fillStyle = 'rgba(20,0,40,0.85)';
+  ctx.strokeStyle = '#f472b6';
+  ctx.lineWidth = 2.5;
+  roundRect(ctx, -bw/2, -bh/2, bw, bh, 10);
+  ctx.fill(); ctx.stroke();
+
+  // String lines
+  ctx.globalAlpha = 0.5;
+  ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-bw/2, -bh/2); ctx.lineTo(-bw/2 - 30, -bh/2 - 40); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bw/2, -bh/2);  ctx.lineTo(bw/2 + 30,  -bh/2 - 40); ctx.stroke();
+
+  // Text
+  ctx.globalAlpha = 1;
+  ctx.font = 'bold 22px Segoe UI,system-ui,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#fdf4ff';
+  ctx.shadowColor = '#f472b6'; ctx.shadowBlur = 12;
+  ctx.fillText(BANNER_TEXT, 0, 0);
+  ctx.shadowBlur = 0;
+  ctx.restore();
+}
+
+function roundRect(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x+r, y);
+  c.lineTo(x+w-r, y); c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w, y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r, y+h); c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x, y+r); c.arcTo(x,y,x+r,y,r);
+  c.closePath();
+}
 // ── Portal ────────────────────────────────────────
 function initPortal(li) { portal={wx:LEVELS[li].len-800,y:H/2,r:0,maxR:Math.min(W,H)*0.18,ang:0,entered:false}; }
 function drawPortal(sx,prog) {
@@ -603,6 +658,7 @@ function loop(ts) {
   updateParts(dt);
   ctx.save(); ctx.translate(shk.x,shk.y);
   drawBg(); drawStars();
+  drawBanner(BANNER_WORLD_X - worldX);
   for(var oi=0;oi<obs.length;oi++){var o=obs[oi],sx=o.wx-worldX;if(sx<-200||sx>W+200)continue;o.type==='m'?drawMeteor(o,sx):drawPlanet(o,sx);}
   drawPortal(portal.wx-worldX,prog);
   if(rkt.alive) drawRocket();
